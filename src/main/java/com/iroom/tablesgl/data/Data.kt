@@ -15,9 +15,9 @@ import java.util.zip.GZIPOutputStream
 class Data : Serializable {
     companion object
     {
-        var GameTableList = emptyMap<String,GameTable>().toMutableMap()
-        var TableIDList = emptyMap<RoomInfo, GameTable>().toMutableMap()
-        var PlayerSittingList = emptyMap<Player, Location>().toMutableMap()
+        var GameTableList = emptyMap<String,GameTable>().toMutableMap() //기본적인 GameTableMap, Serializable
+        var TableIDList = emptyMap<RoomInfo, GameTable>().toMutableMap()  //RoomInfo로 GameTable 얻기, 겹침 방지용
+        var PlayerSittingList = emptyMap<Player, Location>().toMutableMap() //플레이어 게임플레이중 다른 자리 앉기 방지용
 
         fun saveData(path:String)
         {
