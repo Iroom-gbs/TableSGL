@@ -34,7 +34,7 @@ class TableListener : Listener{
     fun OnExit(event: PlayerGetUpSitEvent)
     {
         //게임플레이 중에 Shift로 일어날 때
-        if(getPlaying(event.player)?.let { getRoomStatus(it) }==Status.Playing && event.reason==GetUpReason.GET_UP)
+        if(getPlaying(event.player.uniqueId)?.let { getRoomStatus(it) }==Status.Playing && event.reason==GetUpReason.GET_UP)
         {
             //TODO: GSIt 버그 고쳐지면 게임 플레이 중에 못일어나게 하기 (Pre)
             event.player.sendMessage("자리에 다시 앉아주세요!")
@@ -45,7 +45,7 @@ class TableListener : Listener{
     @EventHandler
     fun OnMove(event: PlayerMoveEvent)
     {
-        if(getPlaying(event.player)?.let { getRoomStatus(it) }==Status.Playing)
+        if(getPlaying(event.player.uniqueId)?.let { getRoomStatus(it) }==Status.Playing)
             if(event.to!!.distance(event.from)>0.01)
             event.isCancelled=true
     }
