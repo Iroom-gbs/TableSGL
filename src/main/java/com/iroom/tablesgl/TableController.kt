@@ -7,6 +7,7 @@ import com.iroom.tablesgl.data.GameTable
 import eu.decentsoftware.holograms.api.DHAPI
 import eu.decentsoftware.holograms.api.DecentHolograms
 import eu.decentsoftware.holograms.api.DecentHologramsAPI
+import eu.decentsoftware.holograms.api.holograms.Hologram
 import eu.decentsoftware.holograms.plugin.DecentHologramsPlugin
 import org.bukkit.Location
 import org.bukkit.entity.Player
@@ -26,6 +27,11 @@ class TableController {
             val loc = t.location
             var tableHologram = DHAPI.createHologram((game.name+t.roomID.toString()),Location(loc.world,loc.x + 0.5,loc.y + 1.7,loc.z+0.5))
             DHAPI.setHologramLines(tableHologram, Arrays.asList(game.name, game.playerCount.toString()+"명 ~ "+ game.maxPlayerCount.toString()+"명"))
+        }
+
+        fun getHologram(r:RoomInfo): Hologram?
+        {
+            return DHAPI.getHologram(getGameById(r.gid).name+r.rid.toString())
         }
 
         fun addIDList(r: RoomInfo, t:GameTable):Boolean
