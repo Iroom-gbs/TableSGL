@@ -1,5 +1,6 @@
 package com.iroom.tablesgl.data
 
+import com.dayo.simplegameapi.data.RoomInfo
 import org.bukkit.util.io.BukkitObjectInputStream
 import org.bukkit.util.io.BukkitObjectOutputStream
 import java.io.File
@@ -13,6 +14,8 @@ class Data : Serializable {
     companion object
     {
         var GameTableList = emptyMap<String,GameTable>().toMutableMap()
+        var TableIDList = emptyMap<RoomInfo, GameTable>().toMutableMap()
+
         fun saveData(path:String)
         {
             if(!File(path).exists())
