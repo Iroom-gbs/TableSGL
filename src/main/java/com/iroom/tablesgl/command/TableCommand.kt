@@ -1,6 +1,9 @@
 package com.iroom.tablesgl.command
 
+import com.dayo.simplegameapi.data.RoomInfo
+import com.iroom.tablesgl.TableController.Companion.addIDList
 import com.iroom.tablesgl.TableController.Companion.makeHologram
+import com.iroom.tablesgl.TableController.Companion.removeIDList
 import com.iroom.tablesgl.TableSGL
 import com.iroom.tablesgl.data.Data.Companion.GameTableList
 import com.iroom.tablesgl.data.GameTable
@@ -23,13 +26,18 @@ class TableCommand(plugin: TableSGL) : CommandExecutor {
                     {
                         val p = sender as Player
                         val g = GameTable(args[2].toInt(),args[3].toInt(),p.location.add(0.0,-1.0,0.0))
-                        makeHologram(g)
-                        GameTableList[args[1]] = g
-                        sender.sendMessage("게임 테이블 생성완료")
+                        if(addIDList(RoomInfo(args[2].toInt(),args[3].toInt()),g))
+                        {
+                            makeHologram(g)
+                            GameTableList[args[1]] = g
+                            sender.sendMessage("게임 테이블 생성완료")
+                        }
+                        else sender.sendMessage("같은 방 정보의 테이블을 두개 이상 생성할 수 없습니다!")
                     }
                     "remove"->
                     {
                         val p = sender as Player
+                        removeIDList(RoomInfo(GameTableList[args[1]]!!.gameID,GameTableList[args[1]]!!.roomID))
                         GameTableList[args[1]]?.removeSeat(plugin)
                         GameTableList.remove(args[1])
                         sender.sendMessage("게임 테이블 제거완료")
