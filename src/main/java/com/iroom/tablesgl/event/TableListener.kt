@@ -8,29 +8,36 @@ import com.dayo.simplegameapi.data.GameManager.Companion.makePlayerFailed
 import com.dayo.simplegameapi.data.RoomInfo
 import com.dayo.simplegameapi.data.Status
 import com.dayo.simplegameapi.event.GameFinishEvent
+import com.dayo.simplegameapi.event.GameStartEvent
 import com.dayo.simplegameapi.event.PlayerFailEvent
 import com.iroom.tablesgl.TableController.Companion.forceLeftPlayer
 import com.iroom.tablesgl.data.Data.Companion.PlayerSittingList
+import com.iroom.tablesgl.data.Data.Companion.TableIDList
 import dev.geco.gsit.api.event.PlayerGetUpSitEvent
-import dev.geco.gsit.api.event.PlayerSitEvent
 import dev.geco.gsit.api.event.PrePlayerSitEvent
 import dev.geco.gsit.objects.GetUpReason
 import org.bukkit.Bukkit
+import org.bukkit.Location
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.player.PlayerKickEvent
 import org.bukkit.event.player.PlayerMoveEvent
+import org.bukkit.event.player.PlayerQuitEvent
+import java.util.*
+
 
 class TableListener : Listener{
     @EventHandler
     fun OnSit(event: PrePlayerSitEvent) {
-        if(event.block.hasMetadata("GameID"))
+        if(PlayerSittingList.containsKey(event.player))
         {
-            if(PlayerSittingList.containsKey(event.player))
-            {
-                if(event.block.location!=PlayerSittingList.get(event.player))
-                    event.isCancelled=true
-            }
-            else
+            if(event.block.location!=PlayerSittingList.get(event.player))
+                event.isCancelled=true
+        }
+        else
+        {
+            if(event.block.hasMetadata("GameID"))
             {
                 Bukkit.getConsoleSender().sendMessage(event.block.getMetadata("GameID")[0].value().toString())
                 val gi = event.block.getMetadata("GameID")[0].value().toString().toInt()
@@ -40,44 +47,91 @@ class TableListener : Listener{
                 {
                     PlayerSittingList.put(event.player,event.block.location)
                 }
+
                 else event.player.sendMessage("게임에 참여할 수 없습니다.")
+
             }
+
         }
     }
 
     @EventHandler
     fun OnExit(event: PlayerGetUpSitEvent)
     {
-        //게임플레이 중에 Shift로 일어날 때
-        if(getPlaying(event.player.uniqueId)?.let { getRoomStatus(it) }==Status.Playing && event.reason==GetUpReason.GET_UP)
+        if(getPlaying(event.player.uniqueId)?.let { getRoomStatus(it) }==Status.Playing)
         {
+            event.player.sendMessage(getPlaying(event.player.uniqueId)!!.toString())
+            //게임플레이 중에 Shift로 일어날 때
             if(event.reason==GetUpReason.GET_UP)
             {
                 //TODO: GSIt 버그 고쳐지면 게임 플레이 중에 못일어나게 하기 (Pre)
                 event.player.sendMessage("자리에 다시 앉아주세요!")
             }
-            else makePlayerFailed(event.player.uniqueId)
+            //다른 이유로 나가질 떄
+            else if(event.reason!=GetUpReason.QUIT&&event.reason!=GetUpReason.KICKED)
+            {
+                makePlayerFailed(event.player.uniqueId)
+            }
         }
-        else leftPlayer(event.player.uniqueId)
+        else
+        {
+            PlayerSittingList.remove(event.player)
+            leftPlayer(event.player.uniqueId)
+        }
+    }
+
+    @EventHandler
+    fun OnQuit(event: PlayerQuitEvent)
+    {
+        if(getPlaying(event.player.uniqueId)?.let { getRoomStatus(it) }==Status.Playing)
+        {
+                makePlayerFailed(event.player.uniqueId)
+        }
+    }
+
+    @EventHandler
+    fun OnKick(event: PlayerKickEvent)
+    {
+        if(getPlaying(event.player.uniqueId)?.let { getRoomStatus(it) }==Status.Playing)
+        {
+            makePlayerFailed(event.player.uniqueId)
+        }
     }
 
     @EventHandler
     fun OnMove(event: PlayerMoveEvent)
     {
         if(getPlaying(event.player.uniqueId)?.let { getRoomStatus(it) }==Status.Playing)
-            if(event.to!!.distance(event.from)>0.01)
-            event.isCancelled=true
+            if(event.to!!.distance(event.from)>0.001)
+            {
+                val to: Location = event.getFrom()
+                to.setPitch(event.getTo()!!.getPitch())
+                to.setYaw(event.getTo()!!.getYaw())
+                event.setTo(to)
+            }
     }
 
     @EventHandler
     fun OnFail(event : PlayerFailEvent)
     {
-        forceLeftPlayer(event.player)
+        Bukkit.getConsoleSender().sendMessage("Failed!")
+        val p = Bukkit.getOfflinePlayer(event.uid)
+        if(p.isOnline)
+        {
+            forceLeftPlayer(p as Player)
+        }
+        PlayerSittingList.remove(p)
+    }
+
+    @EventHandler
+    fun OnGameStart(event: GameStartEvent)
+    {
+        TableIDList.get(event.roomInfo)!!.onGameStart()
     }
 
     @EventHandler
     fun OnGameStop(event: GameFinishEvent)
     {
-
+        TableIDList.get(event.roomInfo)!!.onGameFinish()
     }
 }
