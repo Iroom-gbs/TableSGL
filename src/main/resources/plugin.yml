@@ -1,0 +1,12 @@
+name: TableSGL
+version: '${version}'
+main: com.iroom.tablesgl.TableSGL
+api-version: 1.16
+authors: [ zlfn ]
+depend: [GSit, DecentHolograms, SimpleGameApi]
+description: Table Simple Game Launcher
+
+commands:
+  gt:
+    description: command about GameTable
+    usage: <command>
