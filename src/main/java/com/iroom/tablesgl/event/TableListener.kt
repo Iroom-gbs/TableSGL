@@ -1,21 +1,21 @@
 package com.iroom.tablesgl.event
 
-import com.dayo.simplegameapi.data.GameManager.Companion.getPlaying
-import com.dayo.simplegameapi.data.GameManager.Companion.getRoomStatus
-import com.dayo.simplegameapi.data.GameManager.Companion.joinPlayer
-import com.dayo.simplegameapi.data.GameManager.Companion.leftPlayer
-import com.dayo.simplegameapi.data.GameManager.Companion.makePlayerFailed
-import com.dayo.simplegameapi.data.RoomInfo
-import com.dayo.simplegameapi.data.Status
-import com.dayo.simplegameapi.event.GameFinishEvent
-import com.dayo.simplegameapi.event.GameStartEvent
-import com.dayo.simplegameapi.event.PlayerFailEvent
 import com.iroom.tablesgl.TableController.Companion.forceLeftPlayer
 import com.iroom.tablesgl.data.Data.Companion.PlayerSittingList
 import com.iroom.tablesgl.data.Data.Companion.TableIDList
 import dev.geco.gsit.api.event.PlayerGetUpSitEvent
 import dev.geco.gsit.api.event.PrePlayerSitEvent
 import dev.geco.gsit.objects.GetUpReason
+import me.ddayo.simplegameapi.data.GameManager.Companion.getPlaying
+import me.ddayo.simplegameapi.data.GameManager.Companion.getRoomStatus
+import me.ddayo.simplegameapi.data.GameManager.Companion.joinPlayer
+import me.ddayo.simplegameapi.data.GameManager.Companion.leftPlayer
+import me.ddayo.simplegameapi.data.GameManager.Companion.makePlayerFailed
+import me.ddayo.simplegameapi.data.RoomInfo
+import me.ddayo.simplegameapi.data.Status
+import me.ddayo.simplegameapi.event.GameFinishEvent
+import me.ddayo.simplegameapi.event.GameStartEvent
+import me.ddayo.simplegameapi.event.PlayerFailEvent
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
@@ -58,7 +58,7 @@ class TableListener : Listener{
     @EventHandler
     fun OnExit(event: PlayerGetUpSitEvent)
     {
-        if(getPlaying(event.player.uniqueId)?.let { getRoomStatus(it) }==Status.Playing)
+        if(getPlaying(event.player.uniqueId)?.let { getRoomStatus(it) }== Status.Playing)
         {
             event.player.sendMessage(getPlaying(event.player.uniqueId)!!.toString())
             //게임플레이 중에 Shift로 일어날 때

@@ -1,13 +1,13 @@
 package com.iroom.tablesgl.command
 
-import com.dayo.simplegameapi.data.RoomInfo
 import com.iroom.tablesgl.TableController.Companion.addIDList
 import com.iroom.tablesgl.TableController.Companion.makeHologram
 import com.iroom.tablesgl.TableController.Companion.removeIDList
 import com.iroom.tablesgl.TableSGL
 import com.iroom.tablesgl.data.Data.Companion.GameTableList
 import com.iroom.tablesgl.data.GameTable
-import org.bukkit.ChatColor
+import me.ddayo.simplegameapi.data.GameManager.Companion.getGameId
+import me.ddayo.simplegameapi.data.RoomInfo
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -25,8 +25,8 @@ class TableCommand(plugin: TableSGL) : CommandExecutor {
                     "create"->
                     {
                         val p = sender as Player
-                        val g = GameTable(args[2].toInt(),args[3].toInt(),p.location.add(0.0,-1.0,0.0))
-                        if(addIDList(RoomInfo(args[2].toInt(),args[3].toInt()),g))
+                        val g = GameTable(args[2] ,args[3].toInt(),p.location.add(0.0,-1.0,0.0))
+                        if(addIDList(RoomInfo(getGameId(args[2])!!,args[3].toInt()),g))
                         {
                             makeHologram(g)
                             GameTableList[args[1]] = g
@@ -37,7 +37,7 @@ class TableCommand(plugin: TableSGL) : CommandExecutor {
                     "remove"->
                     {
                         val p = sender as Player
-                        removeIDList(RoomInfo(GameTableList[args[1]]!!.gameID,GameTableList[args[1]]!!.roomID))
+                        removeIDList(RoomInfo(getGameId(GameTableList[args[1]]!!.gamename)!!,GameTableList[args[1]]!!.roomID))
                         GameTableList[args[1]]?.removeSeat(plugin)
                         GameTableList.remove(args[1])
                         sender.sendMessage("게임 테이블 제거완료")
@@ -49,7 +49,7 @@ class TableCommand(plugin: TableSGL) : CommandExecutor {
                         while(I.hasNext())
                         {
                             val g = I.next()
-                            sender.sendMessage(g.key)
+                            sender.sendMessage(g.key + ": " + g.value.gamename + ", " + g.value.roomID.toString())
                         }
                         sender.sendMessage("---------------")
                     }

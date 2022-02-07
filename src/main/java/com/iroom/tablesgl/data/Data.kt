@@ -1,6 +1,6 @@
 package com.iroom.tablesgl.data
 
-import com.dayo.simplegameapi.data.RoomInfo
+import me.ddayo.simplegameapi.data.RoomInfo
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.util.io.BukkitObjectInputStream

@@ -1,32 +1,33 @@
 package com.iroom.tablesgl.data
 
-import com.dayo.simplegameapi.data.GameManager.Companion.getGameById
-import com.dayo.simplegameapi.data.RoomInfo
 import com.iroom.tablesgl.TableController.Companion.getHologram
 import com.iroom.tablesgl.TableSGL
 import eu.decentsoftware.holograms.api.DHAPI
+import me.ddayo.simplegameapi.data.GameManager.Companion.getGame
+import me.ddayo.simplegameapi.data.GameManager.Companion.getGameId
+import me.ddayo.simplegameapi.data.RoomInfo
 import org.bukkit.Location
 import org.bukkit.metadata.FixedMetadataValue
 import java.io.Serializable
 import java.util.*
 
-class GameTable(gameID: Int, roomID: Int, loc: Location):Serializable {
+class GameTable(gamename: String, roomID: Int, loc: Location):Serializable {
     val location = loc.world!!.getBlockAt(loc).location
-    val gameID = gameID
+    val gamename = gamename
     val roomID = roomID
 
     val seats = ArrayList<Seat>()
 
     open fun onGameStart()
     {
-        DHAPI.removeHologramLine(getHologram(RoomInfo(gameID,roomID)),0)
-        DHAPI.removeHologramLine(getHologram(RoomInfo(gameID,roomID)),0)
+        DHAPI.removeHologramLine(getHologram(RoomInfo(getGameId(gamename)!!,roomID)),0)
+        DHAPI.removeHologramLine(getHologram(RoomInfo(getGameId(gamename)!!,roomID)),0)
     }
 
     open fun onGameFinish()
     {
-        val game = getGameById(gameID)
-        DHAPI.setHologramLines(getHologram(RoomInfo(gameID,roomID)), Arrays.asList(game.name, game.playerCount.toString()+"명 ~ "+ game.maxPlayerCount.toString()+"명"))
+        val game = getGame(RoomInfo(getGameId(gamename)!!,roomID))
+        DHAPI.setHologramLines(getHologram(RoomInfo(getGameId(gamename)!!,roomID)), Arrays.asList(gamename, game!!.playerCount.toString()+"명 ~ "+ game.maxPlayerCount.toString()+"명"))
     }
 
     fun removeSeat(plugin:TableSGL)
@@ -54,7 +55,7 @@ class GameTable(gameID: Int, roomID: Int, loc: Location):Serializable {
         {
             val seat = I.next()
             val b = seat.location.world!!.getBlockAt(seat.location)
-            b.setMetadata("GameID", FixedMetadataValue(plugin, gameID.toString()))
+            b.setMetadata("GameID", FixedMetadataValue(plugin, getGameId(gamename).toString()))
             b.setMetadata("RoomID", FixedMetadataValue(plugin, roomID.toString()))
         }
     }
