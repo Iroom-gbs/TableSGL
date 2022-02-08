@@ -3,7 +3,7 @@ version: '${version}'
 main: com.iroom.tablesgl.TableSGL
 api-version: 1.16
 authors: [ zlfn ]
-depend: [GSit, DecentHolograms, SimpleGameApi]
+depend: [GSit, DecentHolograms,SimpleGameApi]
 description: Table Simple Game Launcher
 
 commands:

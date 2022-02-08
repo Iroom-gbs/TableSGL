@@ -1,5 +1,6 @@
 package com.iroom.tablesgl.data
 
+import com.google.gson.Gson
 import me.ddayo.simplegameapi.data.RoomInfo
 import org.bukkit.Location
 import org.bukkit.entity.Player
@@ -21,21 +22,36 @@ class Data : Serializable {
 
         fun saveData(path:String)
         {
-            if(!File(path).exists())
-                File(path).createNewFile()
-            var out = BukkitObjectOutputStream(GZIPOutputStream(FileOutputStream(path)))
-            out.writeObject(GameTableList)
-            out.close()
+            val Gpath = path + File.separator+"TableData.dat"
+            val Ipath = path + File.separator+"TableID.dat"
+            if(!File(Gpath).exists())
+                File(Gpath).createNewFile()
+            if(!File(Ipath).exists())
+                File(Ipath).createNewFile()
+            File(Gpath).writeText(Gson().toJson(GameTableList))
+            var Gout = BukkitObjectOutputStream(GZIPOutputStream(FileOutputStream(Gpath)))
+            var Iout = BukkitObjectOutputStream(GZIPOutputStream(FileOutputStream(Ipath)))
+            Gout.writeObject(GameTableList)
+            Iout.writeObject(TableIDList)
+            Gout.close()
+            Iout.close()
         }
 
         fun loadData(path:String) : Boolean
         {
-            if(File(path).exists())
+            val Gpath = path + File.separator+"TableData.dat"
+            val Ipath = path + File.separator+"TableID.dat"
+            if(File(Gpath).exists())
             {
-                var ins = BukkitObjectInputStream(GZIPInputStream(FileInputStream(path)))
+                var ins = BukkitObjectInputStream(GZIPInputStream(FileInputStream(Gpath)))
                 GameTableList = ins.readObject() as MutableMap<String,GameTable>
                 ins.close()
-                return true
+            }
+            if(File(Ipath).exists())
+            {
+                var ins = BukkitObjectInputStream(GZIPInputStream(FileInputStream(Ipath)))
+                TableIDList = ins.readObject() as MutableMap<RoomInfo,GameTable>
+                ins.close()
             }
             return true
         }

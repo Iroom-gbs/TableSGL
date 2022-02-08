@@ -17,18 +17,12 @@ import java.io.File
 class TableSGL : JavaPlugin() {
     override fun onEnable() {
         server.pluginManager.registerEvents(TableListener(),this)
-        val Ig = getRegisteredGameNameList().iterator()
-        while(Ig.hasNext())
-        {
-            Bukkit.getConsoleSender().sendMessage(Ig.next())
-        }
         this.getCommand("gt")?.setExecutor(TableCommand(this))
-        loadData(dataFolder.toString() + File.separator+"TableData.dat")
+        loadData(dataFolder.toString())
         val I = GameTableList.iterator()
         while(I.hasNext())
         {
             val g = I.next()
-            addIDList(RoomInfo(getGameId(g.value.gamename)!!,g.value.roomID),g.value)
             g.value.addSeat(this)
             makeHologram(g.value)
         }
@@ -36,7 +30,7 @@ class TableSGL : JavaPlugin() {
     }
 
     override fun onDisable() {
-        saveData(dataFolder.toString() + File.separator+ "TableData.dat")
+        saveData(dataFolder.toString())
     }
 
 }
